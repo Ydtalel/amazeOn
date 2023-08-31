@@ -9,6 +9,8 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
+from django.utils.translation import gettext_lazy as _
+
 import os
 from pathlib import Path
 from dotenv import load_dotenv, find_dotenv
@@ -37,6 +39,8 @@ INSTALLED_APPS = [
     'orders.apps.OrdersConfig',
     'payment.apps.PaymentConfig',
     'coupons.apps.CouponsConfig',
+    'rosetta',
+    'parler',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -49,6 +53,9 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+
+    'django.middleware.locale.LocaleMiddleware',
+
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -108,13 +115,34 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en'
 
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
 USE_TZ = True
+
+LANGUAGES = [
+    ('en', _('English')),
+    ('ru', _('Russian')),
+]
+
+LOCALE_PATHS = [
+    BASE_DIR / 'locale',
+]
+
+# настройки django-parler
+PARLER_LANGUAGES = {
+    None: (
+        {'code': 'en'},
+        {'code': 'ru'},
+    ),
+    'default': {
+        'fallback': 'en',
+        'hide_untranslated': False,
+    }
+}
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
@@ -145,3 +173,8 @@ STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_P_KEY")  # Публикуемы�
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_S_KEY")  # Секретный ключ
 STRIPE_API_VERSION = '2022-08-01'
 STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEB')
+
+# настроечные параметры Redis
+REDIS_HOST = 'localhost'
+REDIS_PORT = 6379
+REDIS_DB = 1
